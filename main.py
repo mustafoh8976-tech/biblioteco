@@ -3,8 +3,18 @@ from connect_db import create_table
 from aiogram.filters import Command
 from dotenv import load_dotenv
 from serial import add_bookses,show_books,borrow_book,return_book,my_books,overdue
+from aiogram.types import ReplyKeyboardMarkup,KeyboardButton
 import asyncio
 import os
+
+knop=ReplyKeyboardMarkup(
+    keyboard=[
+        [KeyboardButton(text='add_book'),KeyboardButton(text='show_books')],
+        [KeyboardButton(text='borrow_book'),KeyboardButton(text='return_book')],
+        [KeyboardButton(text='my_books'),KeyboardButton(text='overdue')],
+        [KeyboardButton(text='help')]
+    ]
+)
 
 load_dotenv()
 BOT_TOKEN=os.getenv('BOT_TOKEN')
@@ -28,7 +38,7 @@ async def helps(message:types.Message):
     /borrow book_id - взять книгу в аренду
     /return_book book_id - вернуть книгу в библиотеку
     /my_books - посмотреть свои книги в аренде
-    /overdue - посмотреть просроченные книги''')
+    /overdue - посмотреть просроченные книги''',reply_markup=knop)
     
 
 @dp.message(Command('add_book'))
@@ -39,9 +49,9 @@ async def add_books(message:types.Message):
     author=parts[1].strip()
     result=await add_bookses(title,author)
     if result:
-        await message.answer(f'Книга добавлена: {title}')
+        await message.answer(f'Книга добавлена: {title}',reply_markup=knop)
     else:
-        await message.answer('Не удалось добавить книгу')
+        await message.answer('Не удалось добавить книгу',reply_markup=knop)
 
    
 @dp.message(Command('books'))
@@ -50,7 +60,7 @@ async def books(message:types.Message):
     text=''
     for b in books_list:
         text=text+b['title']+' - '+b['author']+'\n'
-    await message.answer('вот список всех книг в библиотеке:\n'+text)
+    await message.answer('вот список всех книг в библиотеке:\n'+text,reply_markup=knop)
     
 
 @dp.message(Command('borrow'))
@@ -60,11 +70,12 @@ async def borrow(message:types.Message):
     user_id=message.from_user.id
     result=await borrow_book(book_id,user_id)
     if result:
-        await message.answer('книга взята в аренду')
+        await message.answer('книга взята в аренду',reply_markup=knop)
     else:
-        await message.answer('не удалось взять книгу')
-    
-    
+        await message.answer('не удалось взять книгу',reply_markup=knop)
+
+
+
 @dp.message(Command('return_book'))
 async def return_books(message:types.Message):
     args=message.text.split(maxsplit=1)
@@ -72,11 +83,11 @@ async def return_books(message:types.Message):
     user_id=message.from_user.id
     result=await return_book(book_id,user_id)
     if result:
-        await message.answer('книга возвращена в библиотеку')
+        await message.answer('книга возвращена в библиотеку',reply_markup=knop)
     else:
-        await message.answer('не удалось вернуть книгу')
-    
-    
+        await message.answer('не удалось вернуть книгу',reply_markup=knop)
+
+
 @dp.message(Command('my_books'))
 async def my_books_mun(message:types.Message):
     user_id=message.from_user.id
@@ -84,8 +95,8 @@ async def my_books_mun(message:types.Message):
     text=''
     for b in books_list:
         text=text+b['title']+' - '+b['author']+'\n'
-    await message.answer('вот список вашик книг из библиотеке:\n'+text)
-    
+    await message.answer('вот список вашик книг из библиотеке:\n'+text,reply_markup=knop)
+
     
 @dp.message(Command('overdue'))
 async def overdue_mun(message:types.Message):
@@ -93,8 +104,8 @@ async def overdue_mun(message:types.Message):
     text=''
     for b in overdue_list:
         text=text+str(b['book_id'])+' - '+  +'\n'
-    await message.answer('вот список всех просроченных книг:\n'+text)
-    
+    await message.answer('вот список всех просроченных книг:\n'+text,reply_markup=knop)
+
     
 async def main():
     print('Start bot')
