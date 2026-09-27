@@ -1,18 +1,18 @@
-from aiogram import Bot,Dispatcher,types
-from connect_db import create_table
-from aiogram.filters import Command
-from dotenv import load_dotenv
 from serial import add_bookses,show_books,borrow_book,return_book,my_books,overdue
 from aiogram.types import ReplyKeyboardMarkup,KeyboardButton
+from aiogram import Bot,Dispatcher,types
+from aiogram.filters import Command
+from connect_db import create_table
+from dotenv import load_dotenv
 import asyncio
 import os
 
 knop=ReplyKeyboardMarkup(
     keyboard=[
-        [KeyboardButton(text='add_book'),KeyboardButton(text='show_books')],
-        [KeyboardButton(text='borrow_book'),KeyboardButton(text='return_book')],
-        [KeyboardButton(text='my_books'),KeyboardButton(text='overdue')],
-        [KeyboardButton(text='help')]
+        [KeyboardButton(text='/add_book'),KeyboardButton(text='/books')],
+        [KeyboardButton(text='/borrow'),KeyboardButton(text='/return_book')],
+        [KeyboardButton(text='/my_books'),KeyboardButton(text='/overdue')],
+        [KeyboardButton(text='/help')]
     ]
 )
 
@@ -38,7 +38,13 @@ async def helps(message:types.Message):
     /borrow book_id - взять книгу в аренду
     /return_book book_id - вернуть книгу в библиотеку
     /my_books - посмотреть свои книги в аренде
-    /overdue - посмотреть просроченные книги''',reply_markup=knop)
+    /overdue - посмотреть просроченные книги
+    форматы написания:
+    для добовления  пример: /add_book Неуязвимый | Киркман
+    для арендования книг:пример: /borrow 1
+    для возврата книг:пример: /return_book 1
+    а для останых команд просто нажмине на кнопки или команду и все
+    ''',reply_markup=knop)
     
 
 @dp.message(Command('add_book'))
@@ -103,7 +109,7 @@ async def overdue_mun(message:types.Message):
     overdue_list=await overdue()
     text=''
     for b in overdue_list:
-        text=text+str(b['book_id'])+' - '+  +'\n'
+        text=text+str(b['book_id'])+' - '+str(b['user_id'])+'\n'
     await message.answer('вот список всех просроченных книг:\n'+text,reply_markup=knop)
 
     
