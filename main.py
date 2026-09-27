@@ -38,3 +38,13 @@ async def books(message:types.Message):
     await message.answer('вот список всех книг в библиотеке:\n'+show_books)
     
 
+@dp.message(Command('borrow'))
+async def borrow(message:types.Message):
+    borrow_book=await borrow_book()
+    await message.answer('вот список всех книг в библиотеке:\n'+borrow_book)
+    
+    
+@dp.message(Command('return_book'))
+async def return_book(message:types.Message):
+    return_book=await return_book()
+    await message.answer('вот список всех книг в библиотеке:\n'+return_book)

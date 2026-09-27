@@ -26,3 +26,30 @@ async def show_books():
         
         
         
+async def borrow_book(book_id,user_id):
+    conn=await connection()
+    try:
+        await conn.execute('''
+        insert into borrowed_books(book_id,user_id) values($1,$2)
+        ''',book_id,user_id)
+        print('книга взята в аренду')
+    except Exception as err:
+        print('у вас не взята книга в аренду ошибка в:',err)
+        
+        
+    
+    
+async def return_book(book_id,user_id):
+    conn=await connection()
+    try:
+        await conn.execute('''
+        delete from borrowed_books where user_id=$1 and book_id=$2
+        ''',user_id,book_id)
+        print('книга возвращена в библиотеку')
+    except Exception as err:
+        print('у вас не возвращена книга в библиотеку ошибка в:',err)
+        
+        
+    
+    
+async def my_books(user_id):
